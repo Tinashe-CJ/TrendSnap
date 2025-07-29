@@ -313,7 +313,7 @@ export default function PricingPage() {
                   user?.tier === plan.id 
                     ? 'bg-purple-50 border-purple-200' 
                     : 'bg-white'
-                }`}>
+                } transition-all duration-300 hover:scale-105 hover:shadow-xl`}>
                   {plan.popular && (
                     <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                       <Badge className="bg-purple-600 text-white px-4 py-1">

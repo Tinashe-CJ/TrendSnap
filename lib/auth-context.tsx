@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { mockDB } from './mock-backend';
 
 export interface User {
   id: string;
@@ -79,7 +80,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       };
     }
 
-    // Check if user already exists
+    // Check if user already exists in mock DB or localStorage
+    if (mockDB.getUserByEmail(email)) {
+      return {
+        success: false,
+        error: 'An account with this email already exists.'
+      };
+    }
+    
     const existingUsers = JSON.parse(localStorage.getItem('trendsnap_users') || '[]');
     if (existingUsers.find((u: any) => u.email === email)) {
       return {
@@ -132,14 +140,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const login = async (email: string, password: string) => {
-    const existingUsers = JSON.parse(localStorage.getItem('trendsnap_users') || '[]');
-    const user = existingUsers.find((u: any) => u.email === email);
+    // Check mock database first for test users
+    let user = mockDB.getUserByEmail(email);
     
     if (!user) {
-      return {
-        success: false,
-        error: 'Invalid email or password.'
-      };
+      // Fallback to localStorage for regular users
+      const existingUsers = JSON.parse(localStorage.getItem('trendsnap_users') || '[]');
+      user = existingUsers.find((u: any) => u.email === email);
+      
+      if (!user) {
+        return {
+          success: false,
+          error: 'Invalid email or password.'
+        };
+      }
     }
 
     setUser(user);
@@ -157,14 +171,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     
     const updatedUser = { ...user, credits: newCredits };
     setUser(updatedUser);
-    localStorage.setItem('trendsnap_user', JSON.stringify(updatedUser));
     
-    // Update in users array
-    const existingUsers = JSON.parse(localStorage.getItem('trendsnap_users') || '[]');
-    const userIndex = existingUsers.findIndex((u: any) => u.id === user.id);
-    if (userIndex >= 0) {
-      existingUsers[userIndex] = updatedUser;
-      localStorage.setItem('trendsnap_users', JSON.stringify(existingUsers));
+    // Update in mock DB if it's a test user
+    const testUser = mockDB.getUserById(user.id);
+    if (testUser) {
+      mockDB.updateUser(user.id, { credits: newCredits });
+    } else {
+      // Update in localStorage for regular users
+      localStorage.setItem('trendsnap_user', JSON.stringify(updatedUser));
+      const existingUsers = JSON.parse(localStorage.getItem('trendsnap_users') || '[]');
+      const userIndex = existingUsers.findIndex((u: any) => u.id === user.id);
+      if (userIndex >= 0) {
+        existingUsers[userIndex] = updatedUser;
+        localStorage.setItem('trendsnap_users', JSON.stringify(existingUsers));
+      }
     }
   };
 
@@ -173,14 +193,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     
     const updatedUser = { ...user, tier };
     setUser(updatedUser);
-    localStorage.setItem('trendsnap_user', JSON.stringify(updatedUser));
     
-    // Update in users array
-    const existingUsers = JSON.parse(localStorage.getItem('trendsnap_users') || '[]');
-    const userIndex = existingUsers.findIndex((u: any) => u.id === user.id);
-    if (userIndex >= 0) {
-      existingUsers[userIndex] = updatedUser;
-      localStorage.setItem('trendsnap_users', JSON.stringify(existingUsers));
+    // Update in mock DB if it's a test user
+    const testUser = mockDB.getUserById(user.id);
+    if (testUser) {
+      mockDB.updateUser(user.id, { tier });
+    } else {
+      // Update in localStorage for regular users
+      localStorage.setItem('trendsnap_user', JSON.stringify(updatedUser));
+      const existingUsers = JSON.parse(localStorage.getItem('trendsnap_users') || '[]');
+      const userIndex = existingUsers.findIndex((u: any) => u.id === user.id);
+      if (userIndex >= 0) {
+        existingUsers[userIndex] = updatedUser;
+        localStorage.setItem('trendsnap_users', JSON.stringify(existingUsers));
+      }
     }
   };
 

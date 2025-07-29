@@ -12,6 +12,7 @@ import { Zap, Mail, Lock, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
+import { mockDB } from '@/lib/mock-backend';
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -137,6 +138,33 @@ export default function LoginPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
+            {/* Test Users Section */}
+            <div className="mb-6 p-4 bg-blue-50 rounded-lg">
+              <h3 className="text-sm font-semibold text-blue-800 mb-2">Test Users (Demo)</h3>
+              <div className="space-y-2 text-xs">
+                {mockDB.getTestUsers().map((testUser) => (
+                  <div key={testUser.id} className="flex justify-between items-center">
+                    <span className="text-blue-700">{testUser.email}</span>
+                    <div className="flex items-center space-x-2">
+                      <span className="bg-blue-200 text-blue-800 px-2 py-1 rounded text-xs">
+                        {testUser.tier}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setFormData({ email: testUser.email, password: 'demo123' })}
+                        className="text-blue-600 hover:text-blue-800 underline"
+                      >
+                        Use
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <p className="text-xs text-blue-600 mt-2">
+                Click "Use" to auto-fill credentials for any test user
+              </p>
+            </div>
+
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">

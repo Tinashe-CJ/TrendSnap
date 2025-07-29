@@ -1,6 +1,8 @@
 'use client';
 
 import React, { createContext, useContext, useState } from 'react';
+import { mockDB } from './mock-backend';
+import { useAuth } from './auth-context';
 
 export interface Video {
   id: string;
@@ -48,7 +50,17 @@ const MOCK_TEMPLATES = [
 export function VideoProvider({ children }: { children: React.ReactNode }) {
   const [videos, setVideos] = useState<Video[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
+  const { user } = useAuth();
 
+  // Load videos when user changes
+  React.useEffect(() => {
+    if (user) {
+      const userVideos = mockDB.getVideosByUserId(user.id);
+      setVideos(userVideos);
+    } else {
+      setVideos([]);
+    }
+  }, [user]);
   const generateVideo = async (data: {
     script: string;
     template: string;

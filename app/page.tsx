@@ -226,7 +226,7 @@ export default function LandingPage() {
               Get 3 free video exports to test our AI technology
             </p>
             
-            <Card className="max-w-md mx-auto mb-8">
+            <Card className="max-w-md mx-auto mb-8 transition-all duration-300 hover:scale-105 hover:shadow-xl">
               <CardHeader>
                 <CardTitle className="text-2xl">Free Trial</CardTitle>
                 <CardDescription>Perfect to get started</CardDescription>
