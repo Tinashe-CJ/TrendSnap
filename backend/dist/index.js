@@ -11,6 +11,7 @@ const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const passport_1 = __importDefault(require("passport"));
 const logger_1 = require("./utils/logger");
+const database_1 = require("./utils/database");
 require("./config/passport");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
@@ -58,22 +59,28 @@ app.get('/health', (req, res) => {
 });
 app.use(passport_1.default.initialize());
 const auth_1 = __importDefault(require("./routes/auth"));
+const simple_auth_1 = __importDefault(require("./routes/simple-auth"));
 const social_auth_1 = __importDefault(require("./routes/social-auth"));
 const user_1 = __importDefault(require("./routes/user"));
 const video_1 = __importDefault(require("./routes/video"));
 const credit_1 = __importDefault(require("./routes/credit"));
+const content_extraction_1 = __importDefault(require("./routes/content-extraction"));
 console.log('Routes loaded:', {
     auth: !!auth_1.default,
+    simpleAuth: !!simple_auth_1.default,
     socialAuth: !!social_auth_1.default,
     user: !!user_1.default,
     video: !!video_1.default,
-    credit: !!credit_1.default
+    credit: !!credit_1.default,
+    contentExtraction: !!content_extraction_1.default
 });
 app.use('/api/auth', auth_1.default);
+app.use('/api/simple-auth', simple_auth_1.default);
 app.use('/api/auth/social', social_auth_1.default);
 app.use('/api/user', user_1.default);
 app.use('/api/video', video_1.default);
 app.use('/api/credit', credit_1.default);
+app.use('/api', content_extraction_1.default);
 app.use('*', (req, res) => {
     res.status(404).json({
         success: false,
@@ -87,10 +94,20 @@ app.use((err, req, res, next) => {
         error: process.env.NODE_ENV === 'production' ? 'Internal server error' : err.message
     });
 });
-app.listen(PORT, () => {
-    logger_1.logger.info(`🚀 TrendSnap Backend server running on port ${PORT}`);
-    logger_1.logger.info(`📊 Health check available at http://localhost:${PORT}/health`);
-    logger_1.logger.info(`🔗 API base URL: http://localhost:${PORT}/api`);
-});
+const startServer = async () => {
+    try {
+        await (0, database_1.connectDB)();
+        app.listen(PORT, () => {
+            logger_1.logger.info(`🚀 TrendSnap Backend server running on port ${PORT}`);
+            logger_1.logger.info(`📊 Health check available at http://localhost:${PORT}/health`);
+            logger_1.logger.info(`🔗 API base URL: http://localhost:${PORT}/api`);
+        });
+    }
+    catch (error) {
+        logger_1.logger.error('Failed to start server:', error);
+        process.exit(1);
+    }
+};
+startServer();
 exports.default = app;
 //# sourceMappingURL=index.js.map

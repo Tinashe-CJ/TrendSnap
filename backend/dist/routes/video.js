@@ -47,7 +47,7 @@ router.post('/generate', async (req, res) => {
         setTimeout(() => {
             logger_1.logger.info(`Video generation completed for user ${userId}`);
         }, generationTime);
-        res.json({
+        return res.json({
             success: true,
             message: 'Video generation started',
             data: {
@@ -60,7 +60,7 @@ router.post('/generate', async (req, res) => {
     }
     catch (error) {
         logger_1.logger.error('Video generation error:', error);
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
             error: 'Failed to start video generation'
         });
@@ -77,7 +77,7 @@ router.get('/status/:jobId', async (req, res) => {
             });
         }
         const isComplete = Math.random() > 0.5;
-        res.json({
+        return res.json({
             success: true,
             data: {
                 jobId,
@@ -90,7 +90,7 @@ router.get('/status/:jobId', async (req, res) => {
     }
     catch (error) {
         logger_1.logger.error('Get video status error:', error);
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
             error: 'Failed to get video status'
         });
@@ -127,7 +127,7 @@ router.get('/list', async (req, res) => {
                 views: 890
             }
         ];
-        res.json({
+        return res.json({
             success: true,
             data: {
                 videos,
@@ -137,7 +137,7 @@ router.get('/list', async (req, res) => {
     }
     catch (error) {
         logger_1.logger.error('Get videos error:', error);
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
             error: 'Failed to get videos'
         });

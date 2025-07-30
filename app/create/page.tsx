@@ -99,8 +99,10 @@ export default function CreateVideoPage() {
     script: '',
     template: 'trending',
     voice: 'sarah',
-    inputMethod: 'script' as 'script' | 'trend',
+    inputMethod: 'script' as 'script' | 'trend' | 'url',
     selectedTrend: '',
+    url: '',
+    isExtractingUrl: false,
   });
 
   const [showLegalWarning, setShowLegalWarning] = useState(false);
@@ -133,6 +135,61 @@ export default function CreateVideoPage() {
     }
   };
 
+  const handleUrlExtraction = async () => {
+    if (!formData.url) {
+      toast.error('Please enter a valid URL');
+      return;
+    }
+
+    setFormData(prev => ({ ...prev, isExtractingUrl: true }));
+
+    try {
+      const response = await fetch('/api/extract-url', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ url: formData.url }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setFormData(prev => ({
+          ...prev,
+          title: result.data.title || 'Extracted Content',
+          script: result.data.content,
+          isExtractingUrl: false,
+        }));
+        toast.success('Content extracted successfully!');
+      } else {
+        toast.error(result.error || 'Failed to extract content');
+        setFormData(prev => ({ ...prev, isExtractingUrl: false }));
+      }
+    } catch (error) {
+      toast.error('Failed to extract content from URL');
+      setFormData(prev => ({ ...prev, isExtractingUrl: false }));
+    }
+  };
+
+  const validateContent = async (content: string, type: string, tier: string) => {
+    try {
+      const response = await fetch('/api/validate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ content, type, tier }),
+      });
+
+      const result = await response.json();
+      return result.success ? result.data : { isValid: false, issues: ['Validation failed'] };
+    } catch (error) {
+      console.error('Validation error:', error);
+      return { isValid: false, issues: ['Validation service unavailable'] };
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -141,9 +198,16 @@ export default function CreateVideoPage() {
       return;
     }
 
-    if (user.tier === 'free' && formData.script.length > 500) {
-      toast.error('Free tier is limited to 500 characters. Please shorten your script or upgrade.');
+    // Enhanced validation
+    const validation = await validateContent(formData.script, 'script', user.tier);
+    
+    if (!validation.isValid) {
+      toast.error(validation.issues[0] || 'Content validation failed');
       return;
+    }
+
+    if (validation.warnings.length > 0) {
+      console.warn('Content warnings:', validation.warnings);
     }
 
     // Show legal warning for free tier
@@ -220,9 +284,10 @@ export default function CreateVideoPage() {
                 value={formData.inputMethod} 
                 onValueChange={(value) => setFormData(prev => ({ ...prev, inputMethod: value as any }))}
               >
-                <TabsList className="grid grid-cols-2 w-full">
+                <TabsList className="grid grid-cols-3 w-full">
                   <TabsTrigger value="script">Write Script</TabsTrigger>
                   <TabsTrigger value="trend">Use Trending Topic</TabsTrigger>
+                  <TabsTrigger value="url">Extract from URL</TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value="script" className="space-y-4 mt-6">
@@ -306,6 +371,69 @@ export default function CreateVideoPage() {
                         onChange={(e) => setFormData(prev => ({ ...prev, script: e.target.value }))}
                         rows={3}
                       />
+                    </div>
+                  )}
+                </TabsContent>
+                
+                <TabsContent value="url" className="space-y-4 mt-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="url">Website URL</Label>
+                    <div className="flex space-x-2">
+                      <Input
+                        id="url"
+                        type="url"
+                        placeholder="https://example.com/article"
+                        value={formData.url}
+                        onChange={(e) => setFormData(prev => ({ ...prev, url: e.target.value }))}
+                        className="flex-1"
+                      />
+                      <Button
+                        type="button"
+                        onClick={handleUrlExtraction}
+                        disabled={!formData.url || formData.isExtractingUrl}
+                        className="whitespace-nowrap"
+                      >
+                        {formData.isExtractingUrl ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            Extracting...
+                          </>
+                        ) : (
+                          <>
+                            <Wand2 className="h-4 w-4 mr-2" />
+                            Extract Content
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      Paste a URL to automatically extract content and generate a video script
+                    </p>
+                  </div>
+                  
+                  {formData.script && formData.inputMethod === 'url' && (
+                    <div className="space-y-2">
+                      <Label htmlFor="url-script">
+                        Extracted Content
+                        {user.tier === 'free' && (
+                          <span className="text-sm text-gray-500 ml-2">
+                            ({formData.script.length}/500 characters)
+                          </span>
+                        )}
+                      </Label>
+                      <Textarea
+                        id="url-script"
+                        placeholder="Content will be extracted from the URL..."
+                        value={formData.script}
+                        onChange={(e) => setFormData(prev => ({ ...prev, script: e.target.value }))}
+                        rows={4}
+                        maxLength={user.tier === 'free' ? 500 : undefined}
+                      />
+                      {user.tier === 'free' && formData.script.length > 450 && (
+                        <p className="text-sm text-orange-600">
+                          Approaching character limit. Upgrade for unlimited characters.
+                        </p>
+                      )}
                     </div>
                   )}
                 </TabsContent>

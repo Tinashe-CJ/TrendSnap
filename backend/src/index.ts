@@ -78,6 +78,7 @@ import socialAuthRoutes from './routes/social-auth';
 import userRoutes from './routes/user';
 import videoRoutes from './routes/video';
 import creditRoutes from './routes/credit';
+import contentExtractionRoutes from './routes/content-extraction';
 
 console.log('Routes loaded:', {
   auth: !!authRoutes,
@@ -85,7 +86,8 @@ console.log('Routes loaded:', {
   socialAuth: !!socialAuthRoutes,
   user: !!userRoutes,
   video: !!videoRoutes,
-  credit: !!creditRoutes
+  credit: !!creditRoutes,
+  contentExtraction: !!contentExtractionRoutes
 });
 
 // API routes
@@ -95,6 +97,7 @@ app.use('/api/auth/social', socialAuthRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/video', videoRoutes);
 app.use('/api/credit', creditRoutes);
+app.use('/api', contentExtractionRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {

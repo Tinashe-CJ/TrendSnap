@@ -100,33 +100,27 @@ router.post('/signup', [
         });
     }
 });
-router.post('/login', [
-    (0, express_validator_1.body)('email')
-        .isEmail()
-        .normalizeEmail()
-        .withMessage('Please enter a valid email address'),
-    (0, express_validator_1.body)('password')
-        .notEmpty()
-        .withMessage('Password is required')
-], async (req, res) => {
+router.post('/login', async (req, res) => {
     try {
-        const errors = (0, express_validator_1.validationResult)(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({
-                success: false,
-                error: errors.array()[0].msg
-            });
-        }
         const { email, password } = req.body;
+        console.log('🔍 Login attempt for:', email);
+        console.log('🔍 Looking for user with email:', email);
         const user = await User_1.User.findOne({ email });
+        console.log('🔍 User.findOne result:', user ? 'User found' : 'User not found');
         if (!user) {
+            console.log('❌ User not found:', email);
             return res.status(401).json({
                 success: false,
                 error: 'Invalid email or password.'
             });
         }
+        console.log('✅ User found:', user.email, 'Tier:', user.tier);
+        console.log('🔍 User object keys:', Object.keys(user));
+        console.log('🔍 About to call user.comparePassword');
         const isPasswordValid = await user.comparePassword(password);
+        console.log('🔐 Password validation result:', isPasswordValid);
         if (!isPasswordValid) {
+            console.log('❌ Password invalid for:', email);
             return res.status(401).json({
                 success: false,
                 error: 'Invalid email or password.'
@@ -158,6 +152,27 @@ router.post('/login', [
             success: false,
             error: 'Login failed'
         });
+    }
+});
+router.get('/test', async (req, res) => {
+    try {
+        const user = await User_1.User.findOne({ email: 'free@trendsnap.com' });
+        if (!user) {
+            return res.json({ success: false, message: 'User not found' });
+        }
+        const isValid = await user.comparePassword('TestPass123!');
+        return res.json({
+            success: true,
+            user: {
+                email: user.email,
+                tier: user.tier,
+                credits: user.credits
+            },
+            passwordValid: isValid
+        });
+    }
+    catch (error) {
+        return res.status(500).json({ success: false, error: error.message });
     }
 });
 router.get('/me', async (req, res) => {
