@@ -1,0 +1,34 @@
+# Task ID: 7
+# Title: Export Control System
+# Status: pending
+# Dependencies: 6 (Not found)
+# Priority: high
+# Description: Implement tiered export limitations, watermark application, and multiple format support
+# Details:
+Priority: P0 (MVP Critical)
+
+Functional Requirements:
+- Tiered export limitations enforcement
+- Watermark application for free tier
+- Multiple format support (MP4, GIF)
+- Quality tier restrictions
+
+Export Specifications:
+- Free Tier: 3 exports max, SD quality (720p), watermarked
+- Pro Tier: Unlimited exports, up to 4K quality, no watermark
+- Team Tier: All Pro features + bulk export capabilities
+
+Technical Requirements:
+- Server-side export validation
+- Automated watermark overlay system
+- Quality transcoding pipeline
+- Export history tracking
+
+Acceptance Criteria:
+- Free users cannot exceed 3 exports
+- Watermarks consistently applied to free exports
+- Export quality matches tier specifications
+- Download links expire after 48 hours for free tier
+
+# Test Strategy:
+Integration tests for export validation, E2E tests for download flow

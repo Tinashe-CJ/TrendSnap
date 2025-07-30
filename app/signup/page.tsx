@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/lib/auth-context';
 import { Button } from '@/components/ui/button';
@@ -9,7 +9,8 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Zap, Mail, Lock, User, Shield, AlertCircle } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
+import { Zap, Mail, Lock, User, Shield, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
@@ -26,13 +27,66 @@ export default function SignUpPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [showCaptcha, setShowCaptcha] = useState(false);
+  const [emailValidation, setEmailValidation] = useState<{ isValid: boolean; error?: string } | null>(null);
+  const [passwordValidation, setPasswordValidation] = useState<{ isValid: boolean; strength: 'weak' | 'medium' | 'strong'; errors: string[] } | null>(null);
+  const [isValidatingEmail, setIsValidatingEmail] = useState(false);
   
-  const { signup } = useAuth();
+  const { signup, validateEmail, validatePassword } = useAuth();
   const router = useRouter();
+
+  // Real-time email validation
+  useEffect(() => {
+    const validateEmailField = async () => {
+      if (!formData.email) {
+        setEmailValidation(null);
+        return;
+      }
+
+      setIsValidatingEmail(true);
+      try {
+        const result = await validateEmail(formData.email);
+        setEmailValidation(result);
+      } catch (error) {
+        setEmailValidation({ isValid: false, error: 'Email validation failed' });
+      } finally {
+        setIsValidatingEmail(false);
+      }
+    };
+
+    const timeoutId = setTimeout(validateEmailField, 500);
+    return () => clearTimeout(timeoutId);
+  }, [formData.email, validateEmail]);
+
+  // Real-time password validation
+  useEffect(() => {
+    if (!formData.password) {
+      setPasswordValidation(null);
+      return;
+    }
+
+    const result = validatePassword(formData.password);
+    setPasswordValidation(result);
+  }, [formData.password, validatePassword]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    
+    // Validate all fields
+    if (!formData.name.trim()) {
+      setError('Please enter your full name');
+      return;
+    }
+
+    if (!emailValidation?.isValid) {
+      setError(emailValidation?.error || 'Please enter a valid email address');
+      return;
+    }
+
+    if (!passwordValidation?.isValid) {
+      setError(passwordValidation?.errors.join('. '));
+      return;
+    }
     
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
@@ -72,6 +126,24 @@ export default function SignUpPage() {
   const handleCaptchaComplete = () => {
     setShowCaptcha(false);
     handleSubmit(new Event('submit') as any);
+  };
+
+  const getPasswordStrengthColor = (strength: 'weak' | 'medium' | 'strong') => {
+    switch (strength) {
+      case 'weak': return 'bg-red-500';
+      case 'medium': return 'bg-yellow-500';
+      case 'strong': return 'bg-green-500';
+      default: return 'bg-gray-300';
+    }
+  };
+
+  const getPasswordStrengthText = (strength: 'weak' | 'medium' | 'strong') => {
+    switch (strength) {
+      case 'weak': return 'Weak';
+      case 'medium': return 'Medium';
+      case 'strong': return 'Strong';
+      default: return '';
+    }
   };
 
   return (
@@ -149,14 +221,40 @@ export default function SignUpPage() {
                   <Mail className="h-4 w-4 inline mr-2" />
                   Email Address
                 </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Enter your email"
-                  value={formData.email}
-                  onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                  required
-                />
+                <div className="relative">
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="Enter your email"
+                    value={formData.email}
+                    onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                    required
+                    className={`pr-10 ${
+                      emailValidation?.isValid === true ? 'border-green-500' : 
+                      emailValidation?.isValid === false ? 'border-red-500' : ''
+                    }`}
+                  />
+                  {isValidatingEmail && (
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-600"></div>
+                    </div>
+                  )}
+                  {emailValidation && !isValidatingEmail && (
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                      {emailValidation.isValid ? (
+                        <CheckCircle className="h-4 w-4 text-green-500" />
+                      ) : (
+                        <XCircle className="h-4 w-4 text-red-500" />
+                      )}
+                    </div>
+                  )}
+                </div>
+                {emailValidation && !emailValidation.isValid && (
+                  <p className="text-sm text-red-600 flex items-center">
+                    <AlertCircle className="h-3 w-3 mr-1" />
+                    {emailValidation.error}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -171,7 +269,42 @@ export default function SignUpPage() {
                   value={formData.password}
                   onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
                   required
+                  className={`${
+                    passwordValidation?.isValid === true ? 'border-green-500' : 
+                    passwordValidation?.isValid === false ? 'border-red-500' : ''
+                  }`}
                 />
+                {passwordValidation && (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-gray-600">Password strength:</span>
+                      <span className={`text-xs font-medium ${
+                        passwordValidation.strength === 'weak' ? 'text-red-600' :
+                        passwordValidation.strength === 'medium' ? 'text-yellow-600' :
+                        'text-green-600'
+                      }`}>
+                        {getPasswordStrengthText(passwordValidation.strength)}
+                      </span>
+                    </div>
+                    <Progress 
+                      value={
+                        passwordValidation.strength === 'weak' ? 33 :
+                        passwordValidation.strength === 'medium' ? 66 : 100
+                      } 
+                      className="h-1"
+                    />
+                    {passwordValidation.errors.length > 0 && (
+                      <div className="space-y-1">
+                        {passwordValidation.errors.map((error, index) => (
+                          <p key={index} className="text-xs text-red-600 flex items-center">
+                            <XCircle className="h-3 w-3 mr-1" />
+                            {error}
+                          </p>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -186,7 +319,23 @@ export default function SignUpPage() {
                   value={formData.confirmPassword}
                   onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
                   required
+                  className={`${
+                    formData.confirmPassword && formData.password === formData.confirmPassword ? 'border-green-500' : 
+                    formData.confirmPassword && formData.password !== formData.confirmPassword ? 'border-red-500' : ''
+                  }`}
                 />
+                {formData.confirmPassword && (
+                  <p className={`text-sm flex items-center ${
+                    formData.password === formData.confirmPassword ? 'text-green-600' : 'text-red-600'
+                  }`}>
+                    {formData.password === formData.confirmPassword ? (
+                      <CheckCircle className="h-3 w-3 mr-1" />
+                    ) : (
+                      <XCircle className="h-3 w-3 mr-1" />
+                    )}
+                    {formData.password === formData.confirmPassword ? 'Passwords match' : 'Passwords do not match'}
+                  </p>
+                )}
               </div>
 
               <div className="flex items-center space-x-2">
@@ -219,7 +368,7 @@ export default function SignUpPage() {
               <Button
                 type="submit"
                 className="w-full bg-purple-600 hover:bg-purple-700"
-                disabled={isLoading || showCaptcha}
+                disabled={isLoading || showCaptcha || !emailValidation?.isValid || !passwordValidation?.isValid || formData.password !== formData.confirmPassword || !formData.acceptTerms}
               >
                 {isLoading ? 'Creating Account...' : 'Create Account'}
               </Button>

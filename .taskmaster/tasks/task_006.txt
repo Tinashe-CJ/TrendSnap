@@ -1,0 +1,34 @@
+# Task ID: 6
+# Title: Dynamic Subtitle System
+# Status: pending
+# Dependencies: 5 (Not found)
+# Priority: high
+# Description: Implement auto-generated captions with timing synchronization and multiple caption styles
+# Details:
+Priority: P0 (MVP Critical)
+
+Functional Requirements:
+- Auto-generated captions with timing synchronization
+- Multiple caption styles (pop, standard, minimal)
+- Emoji integration support
+- Color and animation customization (paid tiers)
+
+Technical Specifications:
+- Speech-to-text processing via Whisper AI
+- Caption timing accuracy within 100ms
+- Unicode emoji support
+- CSS-based animation system
+
+Free Tier Limitations:
+- 2 caption styles available
+- Fixed color scheme
+- Basic animations only
+
+Acceptance Criteria:
+- Captions accurately reflect spoken content
+- Timing synchronization maintains readability
+- Emoji integration works seamlessly
+- Style changes apply instantly in preview
+
+# Test Strategy:
+Unit tests for caption generation, integration tests for timing

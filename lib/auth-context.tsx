@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { mockDB } from './mock-backend';
+import { apiService } from './api';
 
 export interface User {
   id: string;
@@ -22,213 +22,196 @@ interface AuthContextType {
   updateCredits: (credits: number) => void;
   upgradeTier: (tier: 'pro' | 'team' | 'enterprise') => void;
   isLoading: boolean;
+  validateEmail: (email: string) => boolean;
+  validatePassword: (password: string) => { isValid: boolean; strength: 'weak' | 'medium' | 'strong'; errors: string[] };
+  generateDeviceFingerprint: () => string;
 }
 
-const AuthContext = createContext<AuthContextType | null>(null);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Mock disposable email domains for demonstration
-const DISPOSABLE_EMAIL_DOMAINS = [
-  '10minutemail.com',
-  'tempmail.org',
-  'guerrillamail.com',
-  'mailinator.com',
-  'throwawamail.com'
-];
-
-// Simulate device fingerprinting
-const generateDeviceFingerprint = () => {
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
-  ctx?.fillText('fingerprint', 2, 2);
-  
-  const fingerprint = {
-    userAgent: navigator.userAgent,
-    language: navigator.language,
-    platform: navigator.platform,
-    screen: `${screen.width}x${screen.height}`,
-    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    canvas: canvas.toDataURL(),
-  };
-  
-  return btoa(JSON.stringify(fingerprint)).slice(0, 32);
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 };
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    // Check for existing session
-    const savedUser = localStorage.getItem('trendsnap_user');
-    if (savedUser) {
-      try {
-        setUser(JSON.parse(savedUser));
-      } catch (error) {
-        localStorage.removeItem('trendsnap_user');
-      }
-    }
-    setIsLoading(false);
-  }, []);
+  // Disposable email domains
+  const DISPOSABLE_EMAIL_DOMAINS = [
+    '10minutemail.com', 'tempmail.org', 'guerrillamail.com', 'mailinator.com', 'throwawamail.com',
+    'temp-mail.org', 'sharklasers.com', 'guerrillamailblock.com', 'pokemail.net', 'spam4.me',
+    'bccto.me', 'chacuo.net', 'dispostable.com', 'fakeinbox.com', 'getairmail.com',
+    'mailnesia.com', 'mintemail.com', 'mohmal.com', 'nwldx.com', 'yopmail.com',
+    'getnada.com', 'maildrop.cc', 'mailinator.net', 'tempr.email', 'trashmail.com'
+  ];
 
-  const signup = async (email: string, password: string, name?: string) => {
-    // Check for disposable email
+  // Email validation
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) return false;
+    
     const domain = email.split('@')[1]?.toLowerCase();
-    if (DISPOSABLE_EMAIL_DOMAINS.includes(domain)) {
-      return {
-        success: false,
-        error: 'Disposable email addresses are not allowed. Please use a permanent email address.'
-      };
-    }
-
-    // Check if user already exists in mock DB or localStorage
-    if (mockDB.getUserByEmail(email)) {
-      return {
-        success: false,
-        error: 'An account with this email already exists.'
-      };
-    }
+    if (DISPOSABLE_EMAIL_DOMAINS.includes(domain)) return false;
     
-    const existingUsers = JSON.parse(localStorage.getItem('trendsnap_users') || '[]');
-    if (existingUsers.find((u: any) => u.email === email)) {
-      return {
-        success: false,
-        error: 'An account with this email already exists.'
-      };
-    }
-
-    // Create new user
-    const deviceFingerprint = generateDeviceFingerprint();
-    
-    // Check if device has been used before (anti-abuse)
-    const usedFingerprints = JSON.parse(localStorage.getItem('trendsnap_fingerprints') || '[]');
-    const existingFingerprint = usedFingerprints.find((f: any) => f.fingerprint === deviceFingerprint);
-    
-    let credits = 3; // Default free credits
-    if (existingFingerprint) {
-      credits = 0; // No additional credits for same device
-    }
-
-    const newUser: User = {
-      id: Math.random().toString(36).substring(7),
-      email,
-      name,
-      tier: 'free',
-      credits,
-      createdAt: new Date().toISOString(),
-      deviceFingerprint,
-      isVerified: true, // Simulate email verification
-    };
-
-    // Save user
-    existingUsers.push(newUser);
-    localStorage.setItem('trendsnap_users', JSON.stringify(existingUsers));
-    
-    // Track device fingerprint
-    if (!existingFingerprint) {
-      usedFingerprints.push({
-        fingerprint: deviceFingerprint,
-        userId: newUser.id,
-        createdAt: new Date().toISOString()
-      });
-      localStorage.setItem('trendsnap_fingerprints', JSON.stringify(usedFingerprints));
-    }
-
-    setUser(newUser);
-    localStorage.setItem('trendsnap_user', JSON.stringify(newUser));
-
-    return { success: true };
+    return true;
   };
 
-  const login = async (email: string, password: string) => {
-    // Check mock database first for test users
-    let user = mockDB.getUserByEmail(email);
+  // Password validation
+  const validatePassword = (password: string): { isValid: boolean; strength: 'weak' | 'medium' | 'strong'; errors: string[] } => {
+    const errors: string[] = [];
+    let strength: 'weak' | 'medium' | 'strong' = 'weak';
     
-    if (!user) {
-      // Fallback to localStorage for regular users
-      const existingUsers = JSON.parse(localStorage.getItem('trendsnap_users') || '[]');
-      user = existingUsers.find((u: any) => u.email === email);
-      
-      if (!user) {
-        return {
-          success: false,
-          error: 'Invalid email or password.'
-        };
-      }
+    if (password.length < 8) {
+      errors.push('Password must be at least 8 characters long');
     }
+    
+    if (!/[A-Z]/.test(password)) {
+      errors.push('Password must contain at least one uppercase letter');
+    }
+    
+    if (!/[a-z]/.test(password)) {
+      errors.push('Password must contain at least one lowercase letter');
+    }
+    
+    if (!/\d/.test(password)) {
+      errors.push('Password must contain at least one number');
+    }
+    
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+      errors.push('Password must contain at least one special character');
+    }
+    
+    // Calculate strength
+    const hasLength = password.length >= 8;
+    const hasUpper = /[A-Z]/.test(password);
+    const hasLower = /[a-z]/.test(password);
+    const hasNumber = /\d/.test(password);
+    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    
+    const score = [hasLength, hasUpper, hasLower, hasNumber, hasSpecial].filter(Boolean).length;
+    
+    if (score >= 4 && password.length >= 10) {
+      strength = 'strong';
+    } else if (score >= 3) {
+      strength = 'medium';
+    }
+    
+    return {
+      isValid: errors.length === 0,
+      strength,
+      errors
+    };
+  };
 
-    setUser(user);
-    localStorage.setItem('trendsnap_user', JSON.stringify(user));
-    return { success: true };
+  // Generate device fingerprint
+  const generateDeviceFingerprint = (): string => {
+    if (typeof window === 'undefined') return 'server-side';
+    
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    ctx?.fillText('TrendSnap Device Fingerprint', 10, 10);
+    
+    const fingerprint = [
+      navigator.userAgent,
+      navigator.language,
+      screen.width + 'x' + screen.height,
+      new Date().getTimezoneOffset(),
+      canvas.toDataURL(),
+      navigator.hardwareConcurrency,
+      navigator.deviceMemory,
+      navigator.platform
+    ].join('|');
+    
+    return btoa(fingerprint).slice(0, 32);
+  };
+
+  // Check if user is logged in on mount
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await apiService.getCurrentUser();
+        if (response.success && response.data?.user) {
+          setUser(response.data.user);
+        }
+      } catch (error) {
+        console.log('No authenticated user found');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+  const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const response = await apiService.login(email, password);
+      if (response.success && response.data?.user && response.data?.token) {
+        setUser(response.data.user);
+        apiService.setToken(response.data.token);
+        return { success: true };
+      } else {
+        return { success: false, error: response.error || 'Login failed' };
+      }
+    } catch (error: any) {
+      return { success: false, error: error.message || 'Login failed' };
+    }
+  };
+
+  const signup = async (email: string, password: string, name: string): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const deviceFingerprint = generateDeviceFingerprint();
+      const response = await apiService.signup(email, password, name, deviceFingerprint);
+      if (response.success && response.data?.user && response.data?.token) {
+        setUser(response.data.user);
+        apiService.setToken(response.data.token);
+        return { success: true };
+      } else {
+        return { success: false, error: response.error || 'Signup failed' };
+      }
+    } catch (error: any) {
+      return { success: false, error: error.message || 'Signup failed' };
+    }
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('trendsnap_user');
+    apiService.clearToken();
   };
 
-  const updateCredits = (newCredits: number) => {
-    if (!user) return;
-    
-    const updatedUser = { ...user, credits: newCredits };
-    setUser(updatedUser);
-    
-    // Update in mock DB if it's a test user
-    const testUser = mockDB.getUserById(user.id);
-    if (testUser) {
-      mockDB.updateUser(user.id, { credits: newCredits });
-    } else {
-      // Update in localStorage for regular users
-      localStorage.setItem('trendsnap_user', JSON.stringify(updatedUser));
-      const existingUsers = JSON.parse(localStorage.getItem('trendsnap_users') || '[]');
-      const userIndex = existingUsers.findIndex((u: any) => u.id === user.id);
-      if (userIndex >= 0) {
-        existingUsers[userIndex] = updatedUser;
-        localStorage.setItem('trendsnap_users', JSON.stringify(existingUsers));
-      }
+  const updateCredits = (credits: number) => {
+    if (user) {
+      setUser({ ...user, credits });
     }
   };
 
   const upgradeTier = (tier: 'pro' | 'team' | 'enterprise') => {
-    if (!user) return;
-    
-    const updatedUser = { ...user, tier };
-    setUser(updatedUser);
-    
-    // Update in mock DB if it's a test user
-    const testUser = mockDB.getUserById(user.id);
-    if (testUser) {
-      mockDB.updateUser(user.id, { tier });
-    } else {
-      // Update in localStorage for regular users
-      localStorage.setItem('trendsnap_user', JSON.stringify(updatedUser));
-      const existingUsers = JSON.parse(localStorage.getItem('trendsnap_users') || '[]');
-      const userIndex = existingUsers.findIndex((u: any) => u.id === user.id);
-      if (userIndex >= 0) {
-        existingUsers[userIndex] = updatedUser;
-        localStorage.setItem('trendsnap_users', JSON.stringify(existingUsers));
-      }
+    if (user) {
+      setUser({ ...user, tier });
     }
   };
 
+  const value: AuthContextType = {
+    user,
+    login,
+    signup,
+    logout,
+    updateCredits,
+    upgradeTier,
+    isLoading,
+    validateEmail,
+    validatePassword,
+    generateDeviceFingerprint
+  };
+
   return (
-    <AuthContext.Provider value={{
-      user,
-      login,
-      signup,
-      logout,
-      updateCredits,
-      upgradeTier,
-      isLoading,
-    }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
-}
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
 };

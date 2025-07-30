@@ -1,0 +1,27 @@
+# Task ID: 3
+# Title: Multi-Modal Input Processing System
+# Status: pending
+# Dependencies: 2 (Not found)
+# Priority: high
+# Description: Implement script/headline text input, URL content extraction, and input validation
+# Details:
+Priority: P0 (MVP Critical)
+
+Functional Requirements:
+- Script/headline text input (up to 500 characters for free tier)
+- URL content extraction and summarization
+- Input validation and content filtering
+
+Technical Specifications:
+- NLP processing pipeline for content extraction
+- Content safety filtering (profanity, hate speech detection)
+- Character limits enforced client and server-side
+
+Acceptance Criteria:
+- Users can paste script text up to character limit
+- URLs automatically extract relevant content
+- Inappropriate content filtered with clear feedback
+- Input processing completes within 3 seconds
+
+# Test Strategy:
+Unit tests for validation, integration tests for URL processing

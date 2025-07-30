@@ -1,0 +1,365 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": "1",
+        "title": "User Authentication & Onboarding System",
+        "description": "Implement comprehensive user authentication system with email verification, social login, disposable email detection, and device fingerprinting",
+        "details": "Priority: P0 (MVP Critical)\n\nFunctional Requirements:\n- Email/password registration with real-time validation\n- Social login integration (Google, Apple, Facebook)\n- Disposable email detection and blocking\n- CAPTCHA verification (reCAPTCHA Enterprise)\n- Email verification before any feature access\n- Device fingerprinting implementation\n\nTechnical Specifications:\n- Real-time disposable email API integration (NeverBounce/Kickbox)\n- Weekly blocklist updates for known disposable providers\n- Device fingerprinting capturing browser, OS, GPU, fonts, timezone, screen resolution\n- Database schema linking credits to user_id and device_hash\n- Redis caching for real-time credit checking\n\nAcceptance Criteria:\n- User cannot access any features without verified account\n- Disposable emails blocked with user-friendly error message\n- Device fingerprint successfully captured and stored\n- Social login creates verified account automatically\n- CAPTCHA prevents automated signup attempts\n\n🔄 PARTIALLY IMPLEMENTED: Basic authentication with email/password, disposable email detection, and device fingerprinting are implemented as mock functionality. Social login and CAPTCHA verification still need to be implemented.",
+        "status": "in-progress",
+        "priority": "high",
+        "dependencies": [],
+        "complexity": 8,
+        "effort": "l",
+        "testStrategy": "Unit tests for validation logic, integration tests for social login, E2E tests for signup flow",
+        "subtasks": [
+          {
+            "id": "1.1",
+            "title": "Email/Password Registration System",
+            "description": "Implement secure email/password registration with real-time validation",
+            "details": "✅ COMPLETED: Enhanced Email/Password Registration System\n\n**Implemented Features:**\n- Real-time email validation with disposable email detection\n- Enhanced password strength validation with visual indicators\n- Real-time form validation with immediate feedback\n- Improved device fingerprinting with additional browser data\n- Enhanced anti-abuse measures with device tracking\n- Visual feedback for all form fields (green/red borders, icons)\n- Password strength meter with progress bar\n- Comprehensive error handling and user feedback\n\n**Technical Improvements:**\n- Added 25+ disposable email domains to blocklist\n- Implemented password strength scoring (weak/medium/strong)\n- Enhanced device fingerprinting with 12+ browser attributes\n- Added spam pattern detection for test emails\n- Real-time validation with 500ms debouncing\n- Form submission disabled until all validations pass\n\n**Testing Results:**\n- Email validation works for valid emails and blocks disposable domains\n- Password strength correctly identifies weak/medium/strong passwords\n- Device fingerprinting generates unique 64-character hashes\n- Form validation prevents submission with invalid data\n- UI provides clear visual feedback for all validation states",
+            "status": "done",
+            "effort": "m",
+            "dependencies": []
+          },
+          {
+            "id": "1.2",
+            "title": "Social Login Integration",
+            "description": "Integrate OAuth providers (Google, Apple, Facebook) for social login",
+            "details": "Set up OAuth 2.0 flows for major social providers, handle user data mapping, and ensure secure token management.",
+            "status": "pending",
+            "effort": "m",
+            "dependencies": ["1.1"]
+          },
+          {
+            "id": "1.3",
+            "title": "Disposable Email Detection",
+            "description": "Implement real-time disposable email detection and blocking",
+            "details": "Integrate with NeverBounce/Kickbox API for real-time email validation, maintain local blocklist, and provide user-friendly error messages.",
+            "status": "pending",
+            "effort": "s",
+            "dependencies": ["1.1"]
+          },
+          {
+            "id": "1.4",
+            "title": "CAPTCHA Verification System",
+            "description": "Implement reCAPTCHA Enterprise for bot prevention",
+            "details": "Set up reCAPTCHA Enterprise integration, configure scoring thresholds, and implement fallback mechanisms.",
+            "status": "pending",
+            "effort": "s",
+            "dependencies": ["1.3"]
+          },
+          {
+            "id": "1.5",
+            "title": "Email Verification Flow",
+            "description": "Create email verification system with secure token handling",
+            "details": "Implement secure email verification tokens, email templates, and verification status tracking in database.",
+            "status": "pending",
+            "effort": "m",
+            "dependencies": ["1.4"]
+          },
+          {
+            "id": "1.6",
+            "title": "Device Fingerprinting Implementation",
+            "description": "Implement comprehensive device fingerprinting for fraud prevention",
+            "details": "Create client-side fingerprinting library, server-side hash generation, and encrypted storage of fingerprint data with GDPR compliance.",
+            "status": "pending",
+            "effort": "l",
+            "dependencies": ["1.5"]
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "title": "User Tier Assignment & Credit System",
+        "description": "Implement automatic tier assignment with 3 free credits, credit tracking, and upgrade prompts",
+        "details": "Priority: P0 (MVP Critical)\n\nFunctional Requirements:\n- Automatic assignment of 3 free credits upon signup\n- Credit tracking tied to both account and device fingerprint\n- Clear tier limitation communication\n- Upgrade prompts at appropriate interaction points\n\nTechnical Specifications:\n- Database schema linking credits to user_id and device_hash\n- Redis caching for real-time credit checking\n- Automated tier validation on each action\n\nAcceptance Criteria:\n- New users receive exactly 3 free credits\n- Credits properly decremented on video export\n- Device switching doesn't grant additional free credits\n- Clear communication of tier limitations throughout app\n\n🔄 PARTIALLY IMPLEMENTED: Basic credit system with tier assignment and credit tracking is implemented as mock functionality. Credit decrementation and tier validation are working in the demo.",
+        "status": "in-progress",
+        "priority": "high",
+        "dependencies": [
+          "1"
+        ],
+        "complexity": 5,
+        "effort": "m",
+        "testStrategy": "Unit tests for credit logic, integration tests for tier validation",
+        "subtasks": []
+      },
+      {
+        "id": "3",
+        "title": "Multi-Modal Input Processing System",
+        "description": "Implement script/headline text input, URL content extraction, and input validation",
+        "details": "Priority: P0 (MVP Critical)\n\nFunctional Requirements:\n- Script/headline text input (up to 500 characters for free tier)\n- URL content extraction and summarization\n- Input validation and content filtering\n\nTechnical Specifications:\n- NLP processing pipeline for content extraction\n- Content safety filtering (profanity, hate speech detection)\n- Character limits enforced client and server-side\n\nAcceptance Criteria:\n- Users can paste script text up to character limit\n- URLs automatically extract relevant content\n- Inappropriate content filtered with clear feedback\n- Input processing completes within 3 seconds",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [
+          "2"
+        ],
+        "complexity": 6,
+        "effort": "m",
+        "testStrategy": "Unit tests for validation, integration tests for URL processing",
+        "subtasks": []
+      },
+      {
+        "id": "4",
+        "title": "AI Video Generation Engine - Core Assembly",
+        "description": "Implement automated timeline generation, AI-powered B-roll matching, and faceless visual composition",
+        "details": "Priority: P0 (MVP Critical)\n\nFunctional Requirements:\n- Automated timeline generation within 10 seconds (SD)\n- AI-powered B-roll matching to script segments\n- Faceless visual composition (stock + AI-generated imagery)\n- Synchronized audio-visual output\n\nTechnical Specifications:\n- Machine learning model for scene-to-content matching\n- Integration with stock media APIs (Unsplash, Pexels)\n- AI image generation via Stable Diffusion for custom visuals\n- FFmpeg processing pipeline for video assembly\n\nPerformance Requirements:\n- SD video generation: <10 seconds\n- HD video generation: <30 seconds\n- 99% successful generation rate\n- Concurrent processing support for up to 50 users\n\nAcceptance Criteria:\n- Generated videos match input script contextually\n- Visual quality meets platform standards\n- Audio synchronization accurate within 50ms\n- Generation completes within specified timeframes\n\n🔄 PARTIALLY IMPLEMENTED: Video generation UI and mock generation flow are implemented. The actual AI video generation engine needs to be built with real AI services and video processing.",
+        "status": "in-progress",
+        "priority": "high",
+        "dependencies": [
+          "3"
+        ],
+        "complexity": 9,
+        "effort": "xl",
+        "testStrategy": "Integration tests for video generation, performance tests for timing",
+        "subtasks": [
+          {
+            "id": "4.1",
+            "title": "Timeline Generation Engine",
+            "description": "Implement automated timeline generation that creates video structure based on script content",
+            "details": "Create ML model for analyzing script content and generating appropriate video timeline structure. Must complete within 10 seconds for SD quality.",
+            "status": "pending",
+            "effort": "m",
+            "dependencies": []
+          },
+          {
+            "id": "4.2",
+            "title": "B-roll Matching Algorithm",
+            "description": "Develop AI-powered algorithm to match B-roll content to script segments",
+            "details": "Implement semantic matching between script text and visual content using NLP and computer vision techniques.",
+            "status": "pending",
+            "effort": "l",
+            "dependencies": ["4.1"]
+          },
+          {
+            "id": "4.3",
+            "title": "Stock Media Integration",
+            "description": "Integrate with Unsplash and Pexels APIs for stock media access",
+            "details": "Set up API integrations for stock photos and videos, implement caching and search functionality.",
+            "status": "pending",
+            "effort": "s",
+            "dependencies": ["4.2"]
+          },
+          {
+            "id": "4.4",
+            "title": "AI Image Generation Pipeline",
+            "description": "Implement Stable Diffusion integration for custom image generation",
+            "details": "Set up Stable Diffusion XL for generating custom visuals based on script content and user preferences.",
+            "status": "pending",
+            "effort": "m",
+            "dependencies": ["4.3"]
+          },
+          {
+            "id": "4.5",
+            "title": "Video Assembly Pipeline",
+            "description": "Build FFmpeg-based video processing pipeline",
+            "details": "Create robust video assembly pipeline using FFmpeg for combining audio, video, and captions with proper synchronization.",
+            "status": "pending",
+            "effort": "l",
+            "dependencies": ["4.4"]
+          },
+          {
+            "id": "4.6",
+            "title": "Performance Optimization",
+            "description": "Optimize video generation for speed and resource efficiency",
+            "details": "Implement caching, parallel processing, and resource optimization to meet performance requirements.",
+            "status": "pending",
+            "effort": "m",
+            "dependencies": ["4.5"]
+          },
+          {
+            "id": "4.7",
+            "title": "Concurrency Handling",
+            "description": "Implement concurrent processing support for multiple users",
+            "details": "Set up queue system and resource management to handle up to 50 concurrent video generation requests.",
+            "status": "pending",
+            "effort": "m",
+            "dependencies": ["4.6"]
+          },
+          {
+            "id": "4.8",
+            "title": "Error Recovery & Fallbacks",
+            "description": "Implement robust error handling and fallback mechanisms",
+            "details": "Create comprehensive error handling, retry logic, and fallback content generation for 99% success rate.",
+            "status": "pending",
+            "effort": "s",
+            "dependencies": ["4.7"]
+          }
+        ]
+      },
+      {
+        "id": "5",
+        "title": "Audio Processing System",
+        "description": "Implement AI voiceover generation, background music integration, and audio level balancing",
+        "details": "Priority: P0 (MVP Critical)\n\nFunctional Requirements:\n- AI voiceover generation in multiple languages and tones\n- Background music integration (royalty-free for free tier)\n- Audio level balancing and normalization\n- Custom audio upload (paid tiers only)\n\nTechnical Specifications:\n- Text-to-speech via OpenAI TTS or ElevenLabs\n- Audio mixing pipeline with automatic ducking\n- Format support: MP3, WAV, AAC\n- Audio quality: 44.1kHz/16-bit minimum\n\nAvailable Voices (Free Tier):\n- 3 English voices (male, female, neutral)\n- 2 tone options (conversational, energetic)\n\nAcceptance Criteria:\n- AI voices sound natural and engaging\n- Background music doesn't overpower voiceover\n- Audio export meets platform specifications\n- Custom audio upload works for paid users",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [
+          "4"
+        ],
+        "complexity": 7,
+        "effort": "l",
+        "testStrategy": "Unit tests for audio processing, integration tests for TTS",
+        "subtasks": []
+      },
+      {
+        "id": "6",
+        "title": "Dynamic Subtitle System",
+        "description": "Implement auto-generated captions with timing synchronization and multiple caption styles",
+        "details": "Priority: P0 (MVP Critical)\n\nFunctional Requirements:\n- Auto-generated captions with timing synchronization\n- Multiple caption styles (pop, standard, minimal)\n- Emoji integration support\n- Color and animation customization (paid tiers)\n\nTechnical Specifications:\n- Speech-to-text processing via Whisper AI\n- Caption timing accuracy within 100ms\n- Unicode emoji support\n- CSS-based animation system\n\nFree Tier Limitations:\n- 2 caption styles available\n- Fixed color scheme\n- Basic animations only\n\nAcceptance Criteria:\n- Captions accurately reflect spoken content\n- Timing synchronization maintains readability\n- Emoji integration works seamlessly\n- Style changes apply instantly in preview",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [
+          "5"
+        ],
+        "complexity": 6,
+        "effort": "m",
+        "testStrategy": "Unit tests for caption generation, integration tests for timing",
+        "subtasks": []
+      },
+      {
+        "id": "7",
+        "title": "Export Control System",
+        "description": "Implement tiered export limitations, watermark application, and multiple format support",
+        "details": "Priority: P0 (MVP Critical)\n\nFunctional Requirements:\n- Tiered export limitations enforcement\n- Watermark application for free tier\n- Multiple format support (MP4, GIF)\n- Quality tier restrictions\n\nExport Specifications:\n- Free Tier: 3 exports max, SD quality (720p), watermarked\n- Pro Tier: Unlimited exports, up to 4K quality, no watermark\n- Team Tier: All Pro features + bulk export capabilities\n\nTechnical Requirements:\n- Server-side export validation\n- Automated watermark overlay system\n- Quality transcoding pipeline\n- Export history tracking\n\nAcceptance Criteria:\n- Free users cannot exceed 3 exports\n- Watermarks consistently applied to free exports\n- Export quality matches tier specifications\n- Download links expire after 48 hours for free tier",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [
+          "6"
+        ],
+        "complexity": 7,
+        "effort": "l",
+        "testStrategy": "Integration tests for export validation, E2E tests for download flow",
+        "subtasks": []
+      },
+      {
+        "id": "8",
+        "title": "Fraud Prevention System",
+        "description": "Implement disposable email protection, device fingerprinting, and behavioral analytics",
+        "details": "Priority: P0 (MVP Critical)\n\nFunctional Requirements:\n- Real-time disposable email detection\n- Comprehensive provider blocklist maintenance\n- Device fingerprinting system\n- Behavioral analytics for abuse pattern detection\n\nTechnical Implementation:\n- Integration with email validation service (NeverBounce/Kickbox)\n- Local blocklist with weekly API updates\n- Client-side fingerprinting library (FingerprintJS or custom)\n- Server-side hash generation and storage\n- Redis caching for fast lookups\n\nAcceptance Criteria:\n- >99% disposable email detection accuracy\n- Unique device identification >95% accuracy\n- Suspicious behavior detected within 5 minutes\n- False positive rate <2%",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [
+          "1"
+        ],
+        "complexity": 8,
+        "effort": "l",
+        "testStrategy": "Unit tests for validation logic, integration tests for fingerprinting",
+        "subtasks": []
+      },
+      {
+        "id": "9",
+        "title": "Rate Limiting & Resource Protection",
+        "description": "Implement API rate limiting, resource usage monitoring, and cost protection measures",
+        "details": "Priority: P0 (MVP Critical)\n\nRate Limiting by Tier:\n- Free: 10 requests/minute, 100 requests/day\n- Pro: 100 requests/minute, 5000 requests/day\n- Team: 500 requests/minute, 25000 requests/day\n\nImplementation:\n- Redis-based sliding window rate limiting\n- Per-endpoint specific limits\n- IP-based and user-based limiting\n- Graceful degradation and queue management\n\nResource Monitoring:\n- CPU usage for video generation\n- Storage consumption per user\n- Bandwidth utilization\n- Third-party API usage costs\n\nAcceptance Criteria:\n- Rate limits enforced consistently\n- Resource usage stays within budget projections\n- Emergency stops prevent cost overruns\n- User experience remains smooth within limits",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [
+          "8"
+        ],
+        "complexity": 6,
+        "effort": "m",
+        "testStrategy": "Load tests for rate limiting, monitoring tests for resource usage",
+        "subtasks": []
+      },
+      {
+        "id": "10",
+        "title": "Frontend Architecture Setup",
+        "description": "Set up Next.js 14 frontend with TypeScript, Tailwind CSS, and component library",
+        "details": "Priority: P0 (MVP Critical)\n\nTechnology Stack:\n- Framework: Next.js 14 with TypeScript\n- Styling: Tailwind CSS with custom design system\n- Animation: Framer Motion for micro-interactions\n- State Management: Zustand for client state\n- HTTP Client: Axios with interceptors for auth\n- Testing: Jest + React Testing Library\n\nPerformance Requirements:\n- First Contentful Paint: <2 seconds\n- Time to Interactive: <3 seconds\n- Core Web Vitals: All metrics in \"Good\" range\n- Mobile responsiveness: 100% feature parity\n\nAcceptance Criteria:\n- Project structure follows Next.js 14 best practices\n- All UI components are responsive and accessible\n- Performance metrics meet requirements\n- Testing framework is properly configured\n\n✅ COMPLETED: Next.js 14 with TypeScript, Tailwind CSS, Framer Motion, and UI components are implemented. Landing page, dashboard, and create video pages are functional with mock data.",
+        "status": "done",
+        "priority": "high",
+        "dependencies": [],
+        "complexity": 5,
+        "effort": "m",
+        "testStrategy": "Performance tests, accessibility tests, responsive design tests",
+        "subtasks": []
+      },
+      {
+        "id": "11",
+        "title": "Backend API Architecture",
+        "description": "Set up Node.js FastAPI backend with authentication, validation, and database integration",
+        "details": "Priority: P0 (MVP Critical)\n\nAPI Layer:\n- Node.js: Fastify framework for REST APIs\n- Python: FastAPI for ML/AI processing\n- Authentication: JWT with refresh token rotation\n- Validation: Joi/Zod for request validation\n- Documentation: OpenAPI/Swagger auto-generation\n\nDatabase Design:\n- Primary DB: PostgreSQL 15 with read replicas\n- Caching: Redis Cluster for session and rate limiting\n- Search: Elasticsearch for content indexing\n- File Storage: AWS S3 with CloudFront CDN\n\nAcceptance Criteria:\n- API endpoints follow RESTful conventions\n- Authentication system is secure and scalable\n- Database schema is optimized for performance\n- API documentation is auto-generated and accurate",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [
+          "10"
+        ],
+        "complexity": 7,
+        "effort": "l",
+        "testStrategy": "API tests, security tests, database performance tests",
+        "subtasks": []
+      },
+      {
+        "id": "12",
+        "title": "Payment Integration (Stripe)",
+        "description": "Implement Stripe payment processing for Pro and Team tier subscriptions",
+        "details": "Priority: P0 (MVP Critical)\n\nPricing Structure:\n- Pro Tier: $12/month\n- Team Tier: $29/month\n- Enterprise Tier: Custom pricing\n\nImplementation:\n- Stripe integration for subscription management\n- Webhook handling for payment events\n- Billing portal for customer management\n- Invoice generation and tax compliance\n\nAcceptance Criteria:\n- Users can upgrade to Pro/Team tiers\n- Subscription management works correctly\n- Payment processing is secure and compliant\n- Billing portal provides full customer control",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [
+          "2",
+          "11"
+        ],
+        "complexity": 6,
+        "effort": "m",
+        "testStrategy": "Payment flow tests, webhook tests, billing portal tests",
+        "subtasks": []
+      },
+      {
+        "id": "13",
+        "title": "AI-Powered Trend Engine",
+        "description": "Implement real-time trend aggregation and trending template suggestions",
+        "details": "Priority: P1 (Post-MVP Enhancement)\n\nFunctional Requirements:\n- Real-time trend aggregation from multiple platforms\n- Trending template suggestions\n- Viral audio recommendations\n- One-click trend application\n\nTechnical Specifications:\n- API integrations: TikTok Sounds, Twitter Trends, YouTube Trending, Google Trends\n- Weekly template library updates\n- Trend scoring algorithm based on velocity and engagement metrics\n\nData Sources:\n- TikTok Creative Center API\n- Twitter Trends API\n- YouTube Data API v3\n- Google Trends API\n- Instagram Basic Display API\n\nAcceptance Criteria:\n- Trends refresh every 15 minutes\n- Trending content clearly labeled with recency indicators\n- One-click application of trending elements\n- Trend suggestions relevant to user input context",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [
+          "4"
+        ],
+        "complexity": 8,
+        "effort": "xl",
+        "testStrategy": "Integration tests for trend APIs, performance tests for refresh rate",
+        "subtasks": []
+      },
+      {
+        "id": "14",
+        "title": "My Locker Storage System",
+        "description": "Implement temporary video storage with auto-deletion policies and basic management",
+        "details": "Priority: P1 (Post-MVP Enhancement)\n\nFunctional Requirements:\n- Temporary video storage and organization\n- Auto-deletion policies by tier\n- Basic video management (rename, delete, duplicate)\n- Quick re-export functionality\n\nStorage Specifications:\n- Free Tier: 48-hour retention, auto-delete\n- Pro Tier: 30-day retention with manual management\n- Team Tier: 90-day retention with team sharing\n\nTechnical Implementation:\n- AWS S3 or Cloudflare R2 for media storage\n- Automated cleanup jobs via cron scheduling\n- Metadata storage in PostgreSQL\n\nAcceptance Criteria:\n- Videos automatically deleted per tier policy\n- Users can organize and manage stored content\n- Re-export functionality works without regeneration\n- Storage usage clearly communicated to users",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [
+          "7"
+        ],
+        "complexity": 6,
+        "effort": "m",
+        "testStrategy": "Storage tests, cleanup job tests, management interface tests",
+        "subtasks": []
+      },
+      {
+        "id": "15",
+        "title": "Admin Dashboard & Analytics",
+        "description": "Implement admin dashboard for user management, abuse monitoring, and analytics",
+        "details": "Priority: P1 (Post-MVP Enhancement)\n\nAdmin Features:\n- User management and account monitoring\n- Abuse pattern detection and manual review\n- Platform analytics and performance metrics\n- Content moderation tools\n- Billing and subscription management\n\nAnalytics Dashboard:\n- User acquisition and retention metrics\n- Video generation success rates\n- Revenue and conversion tracking\n- Platform performance monitoring\n- Abuse prevention effectiveness\n\nAcceptance Criteria:\n- Admin can view and manage all user accounts\n- Abuse detection provides clear violation evidence\n- Analytics provide actionable insights\n- Content moderation tools are effective",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [
+          "8",
+          "9"
+        ],
+        "complexity": 7,
+        "effort": "l",
+        "testStrategy": "Admin interface tests, analytics accuracy tests, security tests",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "version": "1.0",
+      "created": "2024-12-19T10:00:00Z",
+      "lastUpdated": "2024-12-19T10:00:00Z",
+      "totalTasks": 15,
+      "pendingTasks": 15,
+      "completedTasks": 0
+    }
+  }
+}

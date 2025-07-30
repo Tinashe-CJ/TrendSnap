@@ -1,0 +1,33 @@
+# Task ID: 14
+# Title: My Locker Storage System
+# Status: pending
+# Dependencies: 7 (Not found)
+# Priority: medium
+# Description: Implement temporary video storage with auto-deletion policies and basic management
+# Details:
+Priority: P1 (Post-MVP Enhancement)
+
+Functional Requirements:
+- Temporary video storage and organization
+- Auto-deletion policies by tier
+- Basic video management (rename, delete, duplicate)
+- Quick re-export functionality
+
+Storage Specifications:
+- Free Tier: 48-hour retention, auto-delete
+- Pro Tier: 30-day retention with manual management
+- Team Tier: 90-day retention with team sharing
+
+Technical Implementation:
+- AWS S3 or Cloudflare R2 for media storage
+- Automated cleanup jobs via cron scheduling
+- Metadata storage in PostgreSQL
+
+Acceptance Criteria:
+- Videos automatically deleted per tier policy
+- Users can organize and manage stored content
+- Re-export functionality works without regeneration
+- Storage usage clearly communicated to users
+
+# Test Strategy:
+Storage tests, cleanup job tests, management interface tests

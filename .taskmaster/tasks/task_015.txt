@@ -1,0 +1,31 @@
+# Task ID: 15
+# Title: Admin Dashboard & Analytics
+# Status: pending
+# Dependencies: 8 (Not found), 9 (Not found)
+# Priority: medium
+# Description: Implement admin dashboard for user management, abuse monitoring, and analytics
+# Details:
+Priority: P1 (Post-MVP Enhancement)
+
+Admin Features:
+- User management and account monitoring
+- Abuse pattern detection and manual review
+- Platform analytics and performance metrics
+- Content moderation tools
+- Billing and subscription management
+
+Analytics Dashboard:
+- User acquisition and retention metrics
+- Video generation success rates
+- Revenue and conversion tracking
+- Platform performance monitoring
+- Abuse prevention effectiveness
+
+Acceptance Criteria:
+- Admin can view and manage all user accounts
+- Abuse detection provides clear violation evidence
+- Analytics provide actionable insights
+- Content moderation tools are effective
+
+# Test Strategy:
+Admin interface tests, analytics accuracy tests, security tests

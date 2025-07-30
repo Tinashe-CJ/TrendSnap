@@ -1,0 +1,87 @@
+# Task ID: 4
+# Title: AI Video Generation Engine - Core Assembly
+# Status: in-progress
+# Dependencies: 3 (Not found)
+# Priority: high
+# Description: Implement automated timeline generation, AI-powered B-roll matching, and faceless visual composition
+# Details:
+Priority: P0 (MVP Critical)
+
+Functional Requirements:
+- Automated timeline generation within 10 seconds (SD)
+- AI-powered B-roll matching to script segments
+- Faceless visual composition (stock + AI-generated imagery)
+- Synchronized audio-visual output
+
+Technical Specifications:
+- Machine learning model for scene-to-content matching
+- Integration with stock media APIs (Unsplash, Pexels)
+- AI image generation via Stable Diffusion for custom visuals
+- FFmpeg processing pipeline for video assembly
+
+Performance Requirements:
+- SD video generation: <10 seconds
+- HD video generation: <30 seconds
+- 99% successful generation rate
+- Concurrent processing support for up to 50 users
+
+Acceptance Criteria:
+- Generated videos match input script contextually
+- Visual quality meets platform standards
+- Audio synchronization accurate within 50ms
+- Generation completes within specified timeframes
+
+🔄 PARTIALLY IMPLEMENTED: Video generation UI and mock generation flow are implemented. The actual AI video generation engine needs to be built with real AI services and video processing.
+
+# Test Strategy:
+Integration tests for video generation, performance tests for timing
+
+# Subtasks:
+## 4.1. Timeline Generation Engine [pending]
+### Dependencies: None
+### Description: Implement automated timeline generation that creates video structure based on script content
+### Details:
+Create ML model for analyzing script content and generating appropriate video timeline structure. Must complete within 10 seconds for SD quality.
+
+## 4.2. B-roll Matching Algorithm [pending]
+### Dependencies: 4.1
+### Description: Develop AI-powered algorithm to match B-roll content to script segments
+### Details:
+Implement semantic matching between script text and visual content using NLP and computer vision techniques.
+
+## 4.3. Stock Media Integration [pending]
+### Dependencies: 4.2
+### Description: Integrate with Unsplash and Pexels APIs for stock media access
+### Details:
+Set up API integrations for stock photos and videos, implement caching and search functionality.
+
+## 4.4. AI Image Generation Pipeline [pending]
+### Dependencies: 4.3
+### Description: Implement Stable Diffusion integration for custom image generation
+### Details:
+Set up Stable Diffusion XL for generating custom visuals based on script content and user preferences.
+
+## 4.5. Video Assembly Pipeline [pending]
+### Dependencies: 4.4
+### Description: Build FFmpeg-based video processing pipeline
+### Details:
+Create robust video assembly pipeline using FFmpeg for combining audio, video, and captions with proper synchronization.
+
+## 4.6. Performance Optimization [pending]
+### Dependencies: 4.5
+### Description: Optimize video generation for speed and resource efficiency
+### Details:
+Implement caching, parallel processing, and resource optimization to meet performance requirements.
+
+## 4.7. Concurrency Handling [pending]
+### Dependencies: 4.6
+### Description: Implement concurrent processing support for multiple users
+### Details:
+Set up queue system and resource management to handle up to 50 concurrent video generation requests.
+
+## 4.8. Error Recovery & Fallbacks [pending]
+### Dependencies: 4.7
+### Description: Implement robust error handling and fallback mechanisms
+### Details:
+Create comprehensive error handling, retry logic, and fallback content generation for 99% success rate.
+

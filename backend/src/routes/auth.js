@@ -1,0 +1,236 @@
+const express = require('express');
+const jwt = require('jsonwebtoken');
+const { body, validationResult } = require('express-validator');
+
+const router = express.Router();
+
+// Disposable email domains
+const DISPOSABLE_EMAIL_DOMAINS = [
+  '10minutemail.com', 'tempmail.org', 'guerrillamail.com', 'mailinator.com', 'throwawamail.com',
+  'temp-mail.org', 'sharklasers.com', 'guerrillamailblock.com', 'pokemail.net', 'spam4.me',
+  'bccto.me', 'chacuo.net', 'dispostable.com', 'fakeinbox.com', 'getairmail.com',
+  'mailnesia.com', 'mintemail.com', 'mohmal.com', 'nwldx.com', 'yopmail.com',
+  'getnada.com', 'maildrop.cc', 'mailinator.net', 'tempr.email', 'trashmail.com'
+];
+
+const { findUserByEmail, saveUser } = require('../utils/userStorage');
+
+// Generate JWT token
+const generateToken = (userId) => {
+  return jwt.sign(
+    { userId },
+    process.env.JWT_SECRET || 'your-secret-key',
+    { expiresIn: '7d' }
+  );
+};
+
+// Signup route
+router.post('/signup', [
+  body('email')
+    .isEmail()
+    .normalizeEmail()
+    .withMessage('Please enter a valid email address'),
+  body('password')
+    .isLength({ min: 8 })
+    .withMessage('Password must be at least 8 characters long')
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/)
+    .withMessage('Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'),
+  body('name')
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .withMessage('Name must be between 2 and 100 characters'),
+  body('deviceFingerprint')
+    .notEmpty()
+    .withMessage('Device fingerprint is required')
+], async (req, res) => {
+  try {
+    // Check validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        error: errors.array()[0].msg
+      });
+    }
+
+    const { email, password, name, deviceFingerprint } = req.body;
+
+    // Check for disposable email
+    const domain = email.split('@')[1]?.toLowerCase();
+    if (DISPOSABLE_EMAIL_DOMAINS.includes(domain)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Disposable email addresses are not allowed. Please use a permanent email address.'
+      });
+    }
+
+    // Check if user already exists
+    if (findUserByEmail(email)) {
+      return res.status(400).json({
+        success: false,
+        error: 'An account with this email already exists.'
+      });
+    }
+
+    // Check if device has been used before (anti-abuse)
+    const { getAllUsers } = require('../utils/userStorage');
+    const existingDevice = getAllUsers().find(user => user.deviceFingerprint === deviceFingerprint);
+    let credits = 3; // Default free credits
+    if (existingDevice) {
+      credits = 0; // No additional credits for same device
+    }
+
+    // Create new user
+    const userId = Date.now().toString();
+    const user = {
+      id: userId,
+      email,
+      password, // In production, this would be hashed
+      name,
+      deviceFingerprint,
+      credits,
+      tier: 'free',
+      isVerified: true,
+      createdAt: new Date().toISOString()
+    };
+
+    saveUser(user);
+
+    // Generate token
+    const token = generateToken(userId);
+
+    console.log(`New user registered: ${email}`);
+
+    res.status(201).json({
+      success: true,
+      message: 'Account created successfully! You have 3 free credits to get started.',
+      data: {
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          tier: user.tier,
+          credits: user.credits,
+          isVerified: user.isVerified
+        },
+        token
+      }
+    });
+
+  } catch (error) {
+    console.error('Signup error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to create account'
+    });
+  }
+});
+
+// Login route
+router.post('/login', [
+  body('email')
+    .isEmail()
+    .normalizeEmail()
+    .withMessage('Please enter a valid email address'),
+  body('password')
+    .notEmpty()
+    .withMessage('Password is required')
+], async (req, res) => {
+  try {
+    // Check validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        error: errors.array()[0].msg
+      });
+    }
+
+    const { email, password } = req.body;
+
+    // Find user
+    const user = findUserByEmail(email);
+    if (!user || user.password !== password) {
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid email or password.'
+      });
+    }
+
+    // Generate token
+    const token = generateToken(user.id);
+
+    console.log(`User logged in: ${email}`);
+
+    res.json({
+      success: true,
+      message: 'Login successful',
+      data: {
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          tier: user.tier,
+          credits: user.credits,
+          isVerified: user.isVerified
+        },
+        token
+      }
+    });
+
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Login failed'
+    });
+  }
+});
+
+// Get current user
+router.get('/me', async (req, res) => {
+  try {
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        error: 'No token provided'
+      });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
+    const { findUserById } = require('../utils/userStorage');
+    const user = findUserById(decoded.userId);
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        error: 'User not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          tier: user.tier,
+          credits: user.credits,
+          isVerified: user.isVerified
+        }
+      }
+    });
+
+  } catch (error) {
+    console.error('Get user error:', error);
+    res.status(401).json({
+      success: false,
+      error: 'Invalid token'
+    });
+  }
+});
+
+module.exports = router; 

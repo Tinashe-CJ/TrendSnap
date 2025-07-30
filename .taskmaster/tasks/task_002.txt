@@ -1,0 +1,30 @@
+# Task ID: 2
+# Title: User Tier Assignment & Credit System
+# Status: in-progress
+# Dependencies: 1 (Not found)
+# Priority: high
+# Description: Implement automatic tier assignment with 3 free credits, credit tracking, and upgrade prompts
+# Details:
+Priority: P0 (MVP Critical)
+
+Functional Requirements:
+- Automatic assignment of 3 free credits upon signup
+- Credit tracking tied to both account and device fingerprint
+- Clear tier limitation communication
+- Upgrade prompts at appropriate interaction points
+
+Technical Specifications:
+- Database schema linking credits to user_id and device_hash
+- Redis caching for real-time credit checking
+- Automated tier validation on each action
+
+Acceptance Criteria:
+- New users receive exactly 3 free credits
+- Credits properly decremented on video export
+- Device switching doesn't grant additional free credits
+- Clear communication of tier limitations throughout app
+
+🔄 PARTIALLY IMPLEMENTED: Basic credit system with tier assignment and credit tracking is implemented as mock functionality. Credit decrementation and tier validation are working in the demo.
+
+# Test Strategy:
+Unit tests for credit logic, integration tests for tier validation

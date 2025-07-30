@@ -1,30 +1,28 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { ArrowLeft, Zap, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Zap, Mail, Lock, AlertCircle } from 'lucide-react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { ArrowLeft } from 'lucide-react';
-import { mockDB } from '@/lib/mock-backend';
 
 export default function LoginPage() {
+  const router = useRouter();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
-    password: '',
+    password: ''
   });
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
-  
-  const { login } = useAuth();
-  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -138,95 +136,89 @@ export default function LoginPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {/* Test Users Section */}
+            {/* Demo Account Info */}
             <div className="mb-6 p-4 bg-blue-50 rounded-lg">
-              <h3 className="text-sm font-semibold text-blue-800 mb-2">Test Users (Demo)</h3>
-              <div className="space-y-2 text-xs">
-                {mockDB.getTestUsers().map((testUser) => (
-                  <div key={testUser.id} className="flex justify-between items-center">
-                    <span className="text-blue-700">{testUser.email}</span>
-                    <div className="flex items-center space-x-2">
-                      <span className="bg-blue-200 text-blue-800 px-2 py-1 rounded text-xs">
-                        {testUser.tier}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => setFormData({ email: testUser.email, password: 'demo123' })}
-                        className="text-blue-600 hover:text-blue-800 underline"
-                      >
-                        Use
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <p className="text-xs text-blue-600 mt-2">
-                Click "Use" to auto-fill credentials for any test user
+              <h3 className="text-sm font-semibold text-blue-800 mb-2">Demo Account</h3>
+              <p className="text-xs text-blue-700 mb-2">
+                Use this test account to try the application:
               </p>
+              <div className="text-xs text-blue-600">
+                <p><strong>Email:</strong> test@example.com</p>
+                <p><strong>Password:</strong> TestPass123!</p>
+              </div>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
+              {error && (
+                <Alert variant="destructive">
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+
               <div className="space-y-2">
-                <Label htmlFor="email">
-                  <Mail className="h-4 w-4 inline mr-2" />
-                  Email Address
-                </Label>
+                <Label htmlFor="email">Email Address</Label>
                 <Input
                   id="email"
                   type="email"
                   placeholder="Enter your email"
                   value={formData.email}
-                  onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   required
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">
-                  <Lock className="h-4 w-4 inline mr-2" />
-                  Password
-                </Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Enter your password"
-                  value={formData.password}
-                  onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-                  required
-                />
+                <Label htmlFor="password">Password</Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="Enter your password"
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    required
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
               </div>
-
-              {error && (
-                <Alert variant="destructive">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
-              )}
 
               <Button
                 type="submit"
-                className="w-full bg-purple-600 hover:bg-purple-700"
+                className="w-full bg-gradient-to-r from-purple-600 to-orange-500 hover:from-purple-700 hover:to-orange-600"
                 disabled={isLoading}
               >
                 {isLoading ? 'Signing In...' : 'Sign In'}
               </Button>
-            </form>
 
-            <div className="mt-4 text-center">
-              <Button
-                variant="link"
-                onClick={() => setShowForgotPassword(true)}
-                className="text-sm text-purple-600 hover:underline p-0"
-              >
-                Forgot your password?
-              </Button>
-            </div>
+              <div className="text-center">
+                <Button
+                  type="button"
+                  variant="link"
+                  className="text-sm text-gray-600 hover:text-purple-600"
+                  onClick={() => setShowForgotPassword(true)}
+                >
+                  Forgot your password?
+                </Button>
+              </div>
+            </form>
 
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-600">
                 Don't have an account?{' '}
-                <Link href="/signup" className="text-purple-600 hover:underline">
-                  Sign up for free
+                <Link href="/signup" className="text-purple-600 hover:text-purple-700 font-medium">
+                  Sign up here
                 </Link>
               </p>
             </div>

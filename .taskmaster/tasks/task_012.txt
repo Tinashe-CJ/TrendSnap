@@ -1,0 +1,28 @@
+# Task ID: 12
+# Title: Payment Integration (Stripe)
+# Status: pending
+# Dependencies: 2 (Not found), 11 (Not found)
+# Priority: high
+# Description: Implement Stripe payment processing for Pro and Team tier subscriptions
+# Details:
+Priority: P0 (MVP Critical)
+
+Pricing Structure:
+- Pro Tier: $12/month
+- Team Tier: $29/month
+- Enterprise Tier: Custom pricing
+
+Implementation:
+- Stripe integration for subscription management
+- Webhook handling for payment events
+- Billing portal for customer management
+- Invoice generation and tax compliance
+
+Acceptance Criteria:
+- Users can upgrade to Pro/Team tiers
+- Subscription management works correctly
+- Payment processing is secure and compliant
+- Billing portal provides full customer control
+
+# Test Strategy:
+Payment flow tests, webhook tests, billing portal tests

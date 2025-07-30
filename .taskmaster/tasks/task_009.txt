@@ -1,0 +1,34 @@
+# Task ID: 9
+# Title: Rate Limiting & Resource Protection
+# Status: pending
+# Dependencies: 8 (Not found)
+# Priority: high
+# Description: Implement API rate limiting, resource usage monitoring, and cost protection measures
+# Details:
+Priority: P0 (MVP Critical)
+
+Rate Limiting by Tier:
+- Free: 10 requests/minute, 100 requests/day
+- Pro: 100 requests/minute, 5000 requests/day
+- Team: 500 requests/minute, 25000 requests/day
+
+Implementation:
+- Redis-based sliding window rate limiting
+- Per-endpoint specific limits
+- IP-based and user-based limiting
+- Graceful degradation and queue management
+
+Resource Monitoring:
+- CPU usage for video generation
+- Storage consumption per user
+- Bandwidth utilization
+- Third-party API usage costs
+
+Acceptance Criteria:
+- Rate limits enforced consistently
+- Resource usage stays within budget projections
+- Emergency stops prevent cost overruns
+- User experience remains smooth within limits
+
+# Test Strategy:
+Load tests for rate limiting, monitoring tests for resource usage

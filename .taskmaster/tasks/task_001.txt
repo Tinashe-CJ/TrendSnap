@@ -1,0 +1,73 @@
+# Task ID: 1
+# Title: User Authentication & Onboarding System
+# Status: in-progress
+# Dependencies: None
+# Priority: high
+# Description: Implement comprehensive user authentication system with email verification, social login, disposable email detection, and device fingerprinting
+# Details:
+Priority: P0 (MVP Critical)
+
+Functional Requirements:
+- Email/password registration with real-time validation
+- Social login integration (Google, Apple, Facebook)
+- Disposable email detection and blocking
+- CAPTCHA verification (reCAPTCHA Enterprise)
+- Email verification before any feature access
+- Device fingerprinting implementation
+
+Technical Specifications:
+- Real-time disposable email API integration (NeverBounce/Kickbox)
+- Weekly blocklist updates for known disposable providers
+- Device fingerprinting capturing browser, OS, GPU, fonts, timezone, screen resolution
+- Database schema linking credits to user_id and device_hash
+- Redis caching for real-time credit checking
+
+Acceptance Criteria:
+- User cannot access any features without verified account
+- Disposable emails blocked with user-friendly error message
+- Device fingerprint successfully captured and stored
+- Social login creates verified account automatically
+- CAPTCHA prevents automated signup attempts
+
+🔄 PARTIALLY IMPLEMENTED: Basic authentication with email/password, disposable email detection, and device fingerprinting are implemented as mock functionality. Social login and CAPTCHA verification still need to be implemented.
+
+# Test Strategy:
+Unit tests for validation logic, integration tests for social login, E2E tests for signup flow
+
+# Subtasks:
+## 1.1. Email/Password Registration System [pending]
+### Dependencies: None
+### Description: Implement secure email/password registration with real-time validation
+### Details:
+Create registration form with email validation, password strength requirements, and real-time feedback. Integrate with email verification system.
+
+## 1.2. Social Login Integration [pending]
+### Dependencies: 1.1
+### Description: Integrate OAuth providers (Google, Apple, Facebook) for social login
+### Details:
+Set up OAuth 2.0 flows for major social providers, handle user data mapping, and ensure secure token management.
+
+## 1.3. Disposable Email Detection [pending]
+### Dependencies: 1.1
+### Description: Implement real-time disposable email detection and blocking
+### Details:
+Integrate with NeverBounce/Kickbox API for real-time email validation, maintain local blocklist, and provide user-friendly error messages.
+
+## 1.4. CAPTCHA Verification System [pending]
+### Dependencies: 1.3
+### Description: Implement reCAPTCHA Enterprise for bot prevention
+### Details:
+Set up reCAPTCHA Enterprise integration, configure scoring thresholds, and implement fallback mechanisms.
+
+## 1.5. Email Verification Flow [pending]
+### Dependencies: 1.4
+### Description: Create email verification system with secure token handling
+### Details:
+Implement secure email verification tokens, email templates, and verification status tracking in database.
+
+## 1.6. Device Fingerprinting Implementation [pending]
+### Dependencies: 1.5
+### Description: Implement comprehensive device fingerprinting for fraud prevention
+### Details:
+Create client-side fingerprinting library, server-side hash generation, and encrypted storage of fingerprint data with GDPR compliance.
+

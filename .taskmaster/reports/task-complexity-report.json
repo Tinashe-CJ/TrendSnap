@@ -1,0 +1,253 @@
+{
+	"meta": {
+		"generatedAt": "2025-07-29T14:02:33.577Z",
+		"tasksAnalyzed": 15,
+		"totalTasks": 15,
+		"analysisCount": 30,
+		"thresholdScore": 5,
+		"projectName": "Taskmaster",
+		"usedResearch": false
+	},
+	"complexityAnalysis": [
+		{
+			"taskId": 1,
+			"taskTitle": "User Authentication & Onboarding System",
+			"complexityScore": 8,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Break down the User Authentication & Onboarding System into subtasks covering email/password registration, social login integration, disposable email detection, CAPTCHA verification, email verification flow, and device fingerprinting implementation. For each subtask, include specific technical requirements and acceptance criteria.",
+			"reasoning": "This task has high complexity due to multiple authentication methods, security features, and third-party integrations. It requires both frontend and backend work with critical security implications."
+		},
+		{
+			"taskId": 2,
+			"taskTitle": "User Tier Assignment & Credit System",
+			"complexityScore": 6,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Divide the User Tier Assignment & Credit System into subtasks covering credit allocation logic, database schema implementation, tier limitation enforcement, and upgrade prompt integration. Include technical specifications for each component.",
+			"reasoning": "While moderately complex, this task involves critical business logic for the credit system, database work, and integration with the authentication system. It requires careful implementation to prevent credit exploitation."
+		},
+		{
+			"taskId": 3,
+			"taskTitle": "Multi-Modal Input Processing System",
+			"complexityScore": 7,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break down the Multi-Modal Input Processing System into subtasks covering text input validation, URL content extraction, content summarization, safety filtering, and character limit enforcement. For each subtask, specify the technical approach and acceptance criteria.",
+			"reasoning": "This task involves complex NLP processing, content extraction from external sources, and content moderation. The integration of multiple input types and safety filtering increases its complexity."
+		},
+		{
+			"taskId": 4,
+			"taskTitle": "AI Video Generation Engine - Core Assembly",
+			"complexityScore": 10,
+			"recommendedSubtasks": 8,
+			"expansionPrompt": "Divide the AI Video Generation Engine into subtasks covering timeline generation, B-roll matching algorithm, stock media integration, AI image generation, video assembly pipeline, performance optimization, concurrency handling, and error recovery. Include detailed technical specifications for each component.",
+			"reasoning": "This is the most complex task in the project, involving multiple AI systems, media processing, and high performance requirements. It requires integration with external APIs, machine learning models, and a robust video processing pipeline."
+		},
+		{
+			"taskId": 5,
+			"taskTitle": "Audio Processing System",
+			"complexityScore": 8,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break down the Audio Processing System into subtasks covering AI voiceover integration, background music selection and integration, audio mixing and normalization, custom audio upload handling, and tier-based feature restrictions. Include technical specifications for audio quality and format requirements.",
+			"reasoning": "This task involves complex audio processing, third-party AI voice services, and audio mixing requirements. The need for high-quality audio output and multiple voice options increases complexity."
+		},
+		{
+			"taskId": 6,
+			"taskTitle": "Dynamic Subtitle System",
+			"complexityScore": 7,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Divide the Dynamic Subtitle System into subtasks covering speech-to-text processing, caption timing synchronization, caption styling system, and emoji/animation integration. Include technical specifications for timing accuracy and style customization.",
+			"reasoning": "This task requires precise timing synchronization, speech recognition integration, and a flexible styling system. The need for accurate caption timing and multiple style options increases complexity."
+		},
+		{
+			"taskId": 7,
+			"taskTitle": "Export Control System",
+			"complexityScore": 7,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break down the Export Control System into subtasks covering tier-based export validation, watermark application, video format transcoding, quality control, and export history tracking. Include technical specifications for each export tier and format requirement.",
+			"reasoning": "This task involves video processing, watermarking, and tier-based restrictions. The need to handle multiple export formats and enforce tier limitations adds complexity."
+		},
+		{
+			"taskId": 8,
+			"taskTitle": "Fraud Prevention System",
+			"complexityScore": 9,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Divide the Fraud Prevention System into subtasks covering disposable email detection, provider blocklist maintenance, device fingerprinting implementation, fingerprint storage and lookup, behavioral analytics, and suspicious activity alerting. Include technical specifications for detection accuracy and performance requirements.",
+			"reasoning": "This security-critical task involves complex detection algorithms, third-party integrations, and sophisticated fingerprinting techniques. The high accuracy requirements and security implications increase its complexity."
+		},
+		{
+			"taskId": 9,
+			"taskTitle": "Rate Limiting & Resource Protection",
+			"complexityScore": 8,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break down the Rate Limiting & Resource Protection system into subtasks covering Redis-based rate limiting implementation, endpoint-specific limit configuration, resource usage monitoring, cost protection mechanisms, and graceful degradation handling. Include technical specifications for each tier's limits.",
+			"reasoning": "This task involves distributed rate limiting, resource monitoring, and protection mechanisms. The need for reliable performance under load and protection against abuse increases complexity."
+		},
+		{
+			"taskId": 10,
+			"taskTitle": "Frontend Architecture Setup",
+			"complexityScore": 6,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Divide the Frontend Architecture Setup into subtasks covering Next.js 14 project initialization, TypeScript configuration, Tailwind CSS integration, component library setup, and state management implementation. Include performance benchmarks and testing configuration for each component.",
+			"reasoning": "While using established technologies, this task requires careful architecture planning and performance optimization. The need for responsive design and accessibility compliance adds complexity."
+		},
+		{
+			"taskId": 11,
+			"taskTitle": "Backend API Architecture",
+			"complexityScore": 8,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Break down the Backend API Architecture into subtasks covering Fastify REST API setup, FastAPI ML service implementation, JWT authentication system, database schema design, caching layer implementation, and API documentation generation. Include technical specifications for security and performance requirements.",
+			"reasoning": "This task involves multiple backend technologies, complex authentication, and database design. The integration between Node.js and Python services and security requirements increases complexity."
+		},
+		{
+			"taskId": 12,
+			"taskTitle": "Payment Integration (Stripe)",
+			"complexityScore": 7,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Divide the Payment Integration into subtasks covering Stripe API integration, subscription management, webhook handling, billing portal implementation, and invoice/tax compliance. Include technical specifications for security requirements and testing procedures.",
+			"reasoning": "This task involves financial transactions and third-party integration with Stripe. The need for secure payment processing, webhook handling, and compliance requirements increases complexity."
+		},
+		{
+			"taskId": 13,
+			"taskTitle": "AI-Powered Trend Engine",
+			"complexityScore": 9,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Break down the AI-Powered Trend Engine into subtasks covering multi-platform API integrations, trend scoring algorithm, template library management, trend application system, data refresh mechanism, and relevance matching. Include technical specifications for data sources and refresh rates.",
+			"reasoning": "This task involves multiple external API integrations, complex trend analysis algorithms, and real-time data processing. The need to aggregate trends from diverse sources and provide relevant suggestions increases complexity."
+		},
+		{
+			"taskId": 14,
+			"taskTitle": "My Locker Storage System",
+			"complexityScore": 6,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Divide the My Locker Storage System into subtasks covering cloud storage integration, metadata management, auto-deletion policies, and video management interface. Include technical specifications for storage requirements and retention policies by tier.",
+			"reasoning": "This task involves cloud storage integration and automated lifecycle management. The tier-based retention policies and management features add moderate complexity."
+		},
+		{
+			"taskId": 15,
+			"taskTitle": "Admin Dashboard & Analytics",
+			"complexityScore": 8,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break down the Admin Dashboard & Analytics into subtasks covering user management interface, abuse detection dashboard, analytics data collection, reporting visualization, and content moderation tools. Include technical specifications for data collection and security requirements.",
+			"reasoning": "This task involves complex data visualization, user management, and security-sensitive operations. The need for comprehensive analytics and moderation tools increases complexity."
+		},
+		{
+			"taskId": "1",
+			"taskTitle": "User Authentication & Onboarding System",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on user authentication & onboarding system.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": "2",
+			"taskTitle": "User Tier Assignment & Credit System",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on user tier assignment & credit system.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": "3",
+			"taskTitle": "Multi-Modal Input Processing System",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on multi-modal input processing system.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": "4",
+			"taskTitle": "AI Video Generation Engine - Core Assembly",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on ai video generation engine - core assembly.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": "5",
+			"taskTitle": "Audio Processing System",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on audio processing system.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": "6",
+			"taskTitle": "Dynamic Subtitle System",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on dynamic subtitle system.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": "7",
+			"taskTitle": "Export Control System",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on export control system.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": "8",
+			"taskTitle": "Fraud Prevention System",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on fraud prevention system.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": "9",
+			"taskTitle": "Rate Limiting & Resource Protection",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on rate limiting & resource protection.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": "10",
+			"taskTitle": "Frontend Architecture Setup",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on frontend architecture setup.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": "11",
+			"taskTitle": "Backend API Architecture",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on backend api architecture.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": "12",
+			"taskTitle": "Payment Integration (Stripe)",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on payment integration (stripe).",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": "13",
+			"taskTitle": "AI-Powered Trend Engine",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on ai-powered trend engine.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": "14",
+			"taskTitle": "My Locker Storage System",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on my locker storage system.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": "15",
+			"taskTitle": "Admin Dashboard & Analytics",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on admin dashboard & analytics.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		}
+	]
+}
