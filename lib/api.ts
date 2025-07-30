@@ -76,14 +76,14 @@ class ApiService {
   }
 
   async login(email: string, password: string) {
-    return this.request('/auth/login', {
+    return this.request('/simple-auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     });
   }
 
   async getCurrentUser() {
-    return this.request('/auth/me');
+    return this.request('/simple-auth/me');
   }
 
   // User endpoints

@@ -6,6 +6,7 @@ import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import passport from 'passport';
 import { logger } from './utils/logger';
+import { connectDB } from './utils/database';
 
 // Import Passport configuration
 import './config/passport';
@@ -30,7 +31,14 @@ app.use(helmet({
 
 // CORS configuration
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: [
+    process.env.FRONTEND_URL || 'http://localhost:3000',
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://localhost:3002',
+    'http://localhost:3003',
+    'http://localhost:3004'
+  ],
   credentials: true,
 }));
 
@@ -65,6 +73,7 @@ app.use(passport.initialize());
 
 // Import routes
 import authRoutes from './routes/auth';
+import simpleAuthRoutes from './routes/simple-auth';
 import socialAuthRoutes from './routes/social-auth';
 import userRoutes from './routes/user';
 import videoRoutes from './routes/video';
@@ -72,6 +81,7 @@ import creditRoutes from './routes/credit';
 
 console.log('Routes loaded:', {
   auth: !!authRoutes,
+  simpleAuth: !!simpleAuthRoutes,
   socialAuth: !!socialAuthRoutes,
   user: !!userRoutes,
   video: !!videoRoutes,
@@ -80,6 +90,7 @@ console.log('Routes loaded:', {
 
 // API routes
 app.use('/api/auth', authRoutes);
+app.use('/api/simple-auth', simpleAuthRoutes);
 app.use('/api/auth/social', socialAuthRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/video', videoRoutes);
@@ -104,10 +115,23 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 });
 
 // Start server
-app.listen(PORT, () => {
-  logger.info(`🚀 TrendSnap Backend server running on port ${PORT}`);
-  logger.info(`📊 Health check available at http://localhost:${PORT}/health`);
-  logger.info(`🔗 API base URL: http://localhost:${PORT}/api`);
-});
+const startServer = async () => {
+  try {
+    // Connect to database first
+    await connectDB();
+    
+    // Start the server
+    app.listen(PORT, () => {
+      logger.info(`🚀 TrendSnap Backend server running on port ${PORT}`);
+      logger.info(`📊 Health check available at http://localhost:${PORT}/health`);
+      logger.info(`🔗 API base URL: http://localhost:${PORT}/api`);
+    });
+  } catch (error) {
+    logger.error('Failed to start server:', error);
+    process.exit(1);
+  }
+};
+
+startServer();
 
 export default app; 

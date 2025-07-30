@@ -16,7 +16,7 @@ export default function LoginPage() {
   const router = useRouter();
   const { login } = useAuth();
   const [formData, setFormData] = useState({
-    email: '',
+    email: 'free@trendsnap.com',
     password: ''
   });
   const [error, setError] = useState('');
@@ -138,13 +138,16 @@ export default function LoginPage() {
           <CardContent>
             {/* Demo Account Info */}
             <div className="mb-6 p-4 bg-blue-50 rounded-lg">
-              <h3 className="text-sm font-semibold text-blue-800 mb-2">Demo Account</h3>
+              <h3 className="text-sm font-semibold text-blue-800 mb-2">Test Accounts</h3>
               <p className="text-xs text-blue-700 mb-2">
-                Use this test account to try the application:
+                Use any of these test accounts to try the application:
               </p>
-              <div className="text-xs text-blue-600">
-                <p><strong>Email:</strong> test@example.com</p>
-                <p><strong>Password:</strong> TestPass123!</p>
+              <div className="text-xs text-blue-600 space-y-1">
+                <p><strong>Free Plan:</strong> free@trendsnap.com</p>
+                <p><strong>Pro Plan:</strong> pro@trendsnap.com</p>
+                <p><strong>Team Plan:</strong> team@trendsnap.com</p>
+                <p><strong>Enterprise Plan:</strong> enterprise@trendsnap.com</p>
+                <p className="mt-2"><strong>Password for all:</strong> TestPass123!</p>
               </div>
             </div>
 

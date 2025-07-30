@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { body, validationResult } from 'express-validator';
+import mongoose from 'mongoose';
 import { User, IUser } from '../models/User';
 import { logger } from '../utils/logger';
 
@@ -93,7 +94,7 @@ router.post('/signup', [
     await user.save();
 
     // Generate token
-    const token = generateToken((user as IUser)._id.toString());
+    const token = generateToken((user as any)._id.toString());
 
     logger.info(`New user registered: ${email}`);
 
@@ -102,7 +103,7 @@ router.post('/signup', [
       message: 'Account created successfully! You have 3 free credits to get started.',
       data: {
         user: {
-          id: (user as IUser)._id,
+          id: (user as any)._id.toString(),
           email: user.email,
           name: user.name,
           tier: user.tier,
@@ -123,39 +124,35 @@ router.post('/signup', [
 });
 
 // Login route
-router.post('/login', [
-  body('email')
-    .isEmail()
-    .normalizeEmail()
-    .withMessage('Please enter a valid email address'),
-  body('password')
-    .notEmpty()
-    .withMessage('Password is required')
-], async (req: Request, res: Response) => {
+router.post('/login', async (req: Request, res: Response) => {
   try {
-    // Check validation errors
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({
-        success: false,
-        error: errors.array()[0].msg
-      });
-    }
-
     const { email, password } = req.body;
 
-    // Find user
+    console.log('🔍 Login attempt for:', email);
+
+    // Find user using User model
+    console.log('🔍 Looking for user with email:', email);
     const user = await User.findOne({ email });
+    console.log('🔍 User.findOne result:', user ? 'User found' : 'User not found');
+    
     if (!user) {
+      console.log('❌ User not found:', email);
       return res.status(401).json({
         success: false,
         error: 'Invalid email or password.'
       });
     }
 
-    // Check password
+    console.log('✅ User found:', user.email, 'Tier:', user.tier);
+    console.log('🔍 User object keys:', Object.keys(user));
+
+    // Check password using User model method
+    console.log('🔍 About to call user.comparePassword');
     const isPasswordValid = await user.comparePassword(password);
+    console.log('🔐 Password validation result:', isPasswordValid);
+    
     if (!isPasswordValid) {
+      console.log('❌ Password invalid for:', email);
       return res.status(401).json({
         success: false,
         error: 'Invalid email or password.'
@@ -167,7 +164,7 @@ router.post('/login', [
     await user.save();
 
     // Generate token
-    const token = generateToken((user as IUser)._id.toString());
+    const token = generateToken((user as any)._id.toString());
 
     logger.info(`User logged in: ${email}`);
 
@@ -176,7 +173,7 @@ router.post('/login', [
       message: 'Login successful',
       data: {
         user: {
-          id: (user as IUser)._id,
+          id: (user as any)._id.toString(),
           email: user.email,
           name: user.name,
           tier: user.tier,
@@ -193,6 +190,30 @@ router.post('/login', [
       success: false,
       error: 'Login failed'
     });
+  }
+});
+
+// Test endpoint
+router.get('/test', async (req: Request, res: Response) => {
+  try {
+    const user = await User.findOne({ email: 'free@trendsnap.com' });
+    if (!user) {
+      return res.json({ success: false, message: 'User not found' });
+    }
+    
+    const isValid = await user.comparePassword('TestPass123!');
+    
+    return res.json({
+      success: true,
+      user: {
+        email: user.email,
+        tier: user.tier,
+        credits: user.credits
+      },
+      passwordValid: isValid
+    });
+  } catch (error: any) {
+    return res.status(500).json({ success: false, error: error.message });
   }
 });
 
@@ -234,7 +255,7 @@ router.get('/me', async (req: Request, res: Response) => {
 
   } catch (error) {
     logger.error('Get user error:', error);
-    res.status(401).json({
+    return res.status(401).json({
       success: false,
       error: 'Invalid token'
     });

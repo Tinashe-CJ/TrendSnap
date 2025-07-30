@@ -24,7 +24,7 @@ router.get('/balance', async (req, res) => {
       });
     }
 
-    res.json({
+    return res.json({
       success: true,
       data: {
         credits: user.credits,
@@ -35,7 +35,7 @@ router.get('/balance', async (req, res) => {
 
   } catch (error) {
     logger.error('Get credits error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Failed to get credit balance'
     });
@@ -93,7 +93,7 @@ router.post('/purchase', async (req, res) => {
 
     await user.save();
 
-    res.json({
+    return res.json({
       success: true,
       message: 'Credits purchased successfully',
       data: {
@@ -106,7 +106,7 @@ router.post('/purchase', async (req, res) => {
 
   } catch (error) {
     logger.error('Purchase credits error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Failed to purchase credits'
     });
@@ -151,7 +151,7 @@ router.get('/packages', async (req, res) => {
       }
     ];
 
-    res.json({
+    return res.json({
       success: true,
       data: {
         packages
@@ -160,7 +160,7 @@ router.get('/packages', async (req, res) => {
 
   } catch (error) {
     logger.error('Get packages error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Failed to get packages'
     });
